@@ -4,4 +4,17 @@ version = "0.1.0"
 authors = ["Jamie Brynes <jamiebrynes7@gmail.com>"]
 edition = "2018"
 
+[[bin]]
+name = "gamelogic"
+path = "src/gamelogic/main.rs"
+
+[[bin]]
+name = "client"
+path = "src/client/main.rs"
+
+[[bin]]
+name = "generate-snapshot"
+path = "src/generate-snapshot/main.rs"
+
 [dependencies]
+spatialos-sdk = { git = "https://github.com/jamiebrynes7/spatialos-sdk-rs" }
