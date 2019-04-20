@@ -6,13 +6,6 @@
     },
     "loadBalancing": {
       "layerConfigurations": [
-        {
-          "layer": "gamelogic",
-          "rectangle_grid": {
-            "cols": 1,
-            "rows": 1
-          }
-        }
       ]
     },
     "snapshot": {
