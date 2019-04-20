@@ -18,3 +18,5 @@ path = "src/generate-snapshot/main.rs"
 
 [dependencies]
 spatialos-sdk = { git = "https://github.com/jamiebrynes7/spatialos-sdk-rs" }
+log = "0.4.6"
+structopt = "0.2.15"

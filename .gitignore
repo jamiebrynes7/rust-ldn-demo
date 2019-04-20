@@ -1,6 +1,8 @@
 /target
 **/*.rs.bk
+Cargo.lock
 
 build/
 dependencies/
 src/shared/generated.rs
+.idea/*
