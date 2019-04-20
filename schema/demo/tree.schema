@@ -1,0 +1,7 @@
+package demo;
+
+component Tree {
+    id = 1001;
+
+    uint32 resources_left = 1;
+}

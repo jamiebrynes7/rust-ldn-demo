@@ -6,3 +6,4 @@ build/
 dependencies/
 src/shared/generated.rs
 .idea/*
+logs/
