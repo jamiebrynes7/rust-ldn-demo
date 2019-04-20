@@ -1,0 +1,13 @@
+{
+    "configurationVersion": "0.1",
+    "projectName": "zergling",
+    "schemaDescriptor": "./build/schema/schema.descriptor",
+    "serverWorkers": [
+      "./rust_worker.json"
+    ],
+    "clientWorkers": [
+      "./rust_client.json"
+    ],
+    "launch_config": "world.json"
+  }
+  
