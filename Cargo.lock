@@ -277,6 +277,7 @@ dependencies = [
 name = "rust-ldn-demo"
 version = "0.1.0"
 dependencies = [
+ "futures 0.1.26 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "spatialos-sdk 0.0.0 (git+https://github.com/jamiebrynes7/spatialos-sdk-rs)",
