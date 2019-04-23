@@ -1,0 +1,19 @@
+package demo;
+
+enum ActionType {
+    IDLE = 0;
+    FETCHING = 1;
+    RETURNING = 2;
+}
+
+type Action {
+    ActionType typ = 1;
+    option<EntityId> target = 2;
+}
+
+component Lumberjack {
+    id = 1002;
+
+    uint32 resources = 1;
+    Action action = 2;
+}

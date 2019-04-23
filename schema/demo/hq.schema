@@ -1,0 +1,7 @@
+package demo;
+
+component Headquarters {
+    id = 1003;
+
+    uint32 score = 1;
+}
