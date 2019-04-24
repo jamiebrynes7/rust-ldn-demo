@@ -1,3 +1,4 @@
+pub mod behavior;
 pub mod connection;
 pub mod generated;
 pub mod opt;
