@@ -13,11 +13,17 @@ use rust_ldn_demo::shared::{
 use rand::Rng;
 use rand::prelude::ThreadRng;
 use spatialos_sdk::worker::EntityId;
+use std::path::Path;
+use spatialos_sdk::worker::entity::Entity;
+use std::env::current_dir;
 
 const NUM_TREES: i32 = 2000;
 const NUM_CLUSTERS: i32 = 20;
-const CLUSTER_RADIUS: i32 = 150;
+const TREE_CLUSTER_RADIUS: i32 = 150;
 const WORLD_RADIUS: i32 = 500;
+
+const NUM_LUMBERJACKS: i32 = 10;
+const LUMBERJACK_CLUSTER_RADIUS: i32 = 15;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let opt :Opt = Opt::from_args();
@@ -26,33 +32,32 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut target_file = env::current_dir()?;
     target_file.push(opt.snapshot_path);
 
-    let mut stream = SnapshotOutputStream::new(target_file)?;
+    let mut snapshot = Snapshot::new(target_file)?;
 
     let clusters = generate_clusters(&mut rng);
 
-    let mut entity_count = 1;
 
     for cluster in &clusters {
         for _i in 0..(NUM_TREES / NUM_CLUSTERS) {
-            add_tree(&mut stream, entity_count, cluster, &mut rng)?;
-            entity_count += 1;
+            snapshot.write(&templates::tree(&get_random_coords(cluster, TREE_CLUSTER_RADIUS, &mut rng))?)?;
         }
     }
+
+    let hq_coord = (WORLD_RADIUS - 100) as f64;
+    generate_hq(&mut snapshot, hq_coord, &mut rng)?;
+    let hq_coord = - hq_coord;
+    generate_hq(&mut snapshot, hq_coord, &mut rng)?;
 
     Ok(())
 }
 
-// TODO: Fix error where write_entity isn't a &mut method.
-fn add_tree(stream: &mut SnapshotOutputStream, id: i64, center: &Vector3d, rng: &mut ThreadRng) -> Result<(), Box<dyn std::error::Error>> {
-    let mut position = center.clone();
+fn generate_hq(snapshot: &mut Snapshot, coord: f64, rng: &mut ThreadRng) -> Result<(), Box<dyn std::error::Error>> {
+    let hq_position = Vector3d { x: coord, y: 0.0, z: coord };
+    snapshot.write( &templates::headquarters(&hq_position)?)?;
 
-    let angle_adjustment = rng.gen_range(0.0, 2.0 * std::f64::consts::PI);
-    let (z_component, x_component) = angle_adjustment.sin_cos();
-
-    position.x += x_component * rng.gen_range(0.0, CLUSTER_RADIUS as f64);
-    position.z += z_component * rng.gen_range(0.0, CLUSTER_RADIUS as f64);
-
-    stream.write_entity(EntityId::new(id), &templates::tree(&position)?)?;
+    for _i in 0..NUM_LUMBERJACKS {
+        snapshot.write(&templates::lumberjack(&get_random_coords(&hq_position, LUMBERJACK_CLUSTER_RADIUS, rng))?)?;
+    }
 
     Ok(())
 }
@@ -60,7 +65,7 @@ fn add_tree(stream: &mut SnapshotOutputStream, id: i64, center: &Vector3d, rng: 
 fn generate_clusters(rng: &mut ThreadRng) -> Vec<Vector3d> {
     let mut count = 0;
 
-    let max = (WORLD_RADIUS - CLUSTER_RADIUS) as f64;
+    let max = (WORLD_RADIUS - TREE_CLUSTER_RADIUS) as f64;
     let min = -max;
 
     from_fn(move || {
@@ -78,10 +83,43 @@ fn generate_clusters(rng: &mut ThreadRng) -> Vec<Vector3d> {
     }).collect()
 }
 
+fn get_random_coords(center: &Vector3d, radius: i32, rng: &mut ThreadRng) -> Vector3d {
+    let mut position = center.clone();
+
+    let angle_adjustment = rng.gen_range(0.0, 2.0 * std::f64::consts::PI);
+    let (z_component, x_component) = angle_adjustment.sin_cos();
+
+    position.x += x_component * rng.gen_range(0.0, radius as f64);
+    position.z += z_component * rng.gen_range(0.0, radius as f64);
+
+    position
+}
+
 #[derive(StructOpt, Debug)]
 #[structopt(name = "generate-snapshot")]
 struct Opt {
 
     #[structopt(short = "p", long="snapshot-path")]
     snapshot_path: PathBuf
+}
+
+struct Snapshot {
+    stream: SnapshotOutputStream,
+    current_id: i64
+}
+
+impl Snapshot {
+    pub fn new<P: AsRef<Path>>(filename: P) -> Result<Self, String> {
+        Ok(Snapshot {
+            stream: SnapshotOutputStream::new(filename)?,
+            current_id: 1
+        })
+    }
+
+    pub fn write(&mut self, entity: &Entity) -> Result<(), Box<dyn std::error::Error>> {
+        self.stream.write_entity(EntityId::new(self.current_id), entity)?;
+        self.current_id += 1;
+
+        Ok(())
+    }
 }
