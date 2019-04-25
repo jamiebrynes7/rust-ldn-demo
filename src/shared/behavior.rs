@@ -1,5 +1,6 @@
 use spatialos_sdk::worker::view::{View};
 use spatialos_sdk::worker::connection::{Connection, WorkerConnection};
+use spatialos_sdk::worker::op::WorkerOp;
 
 pub trait Behavior {
     fn tick(&mut self, view: &View, connection: &mut WorkerConnection);
@@ -24,8 +25,24 @@ impl BehaviorManager {
     }
 
     pub fn tick(&mut self, connection: &mut WorkerConnection) {
-        let ops = connection.get_op_list(0);
-        self.view.process_ops(&ops);
+        let mut in_critical_section = false;
+        self.view.clear_transient_data();
+
+        loop {
+            let ops = connection.get_op_list(0);
+            self.view.process_ops(&ops);
+
+            for op in ops.iter() {
+                match op {
+                    WorkerOp::CriticalSection(_) => in_critical_section = !in_critical_section,
+                    _ => {}
+                }
+            }
+
+            if !in_critical_section {
+                break
+            }
+        }
 
         for behaviour in &mut self.behaviours {
             behaviour.tick(&self.view, connection);
