@@ -8,6 +8,6 @@
     "clientWorkers": [
       "./rust_client.json"
     ],
-    "launch_config": "world.json"
+    "launchConfiguration": "world.json"
   }
   
