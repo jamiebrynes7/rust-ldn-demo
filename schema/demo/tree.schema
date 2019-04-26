@@ -1,7 +1,11 @@
 package demo;
 
+type Chop {}
+
 component Tree {
     id = 1001;
 
     uint32 resources_left = 1;
+
+    command Chop try_chop(Chop);
 }
