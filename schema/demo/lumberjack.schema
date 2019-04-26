@@ -3,7 +3,8 @@ package demo;
 enum ActionType {
     IDLE = 0;
     FETCHING = 1;
-    RETURNING = 2;
+    WAITING = 2;
+    RETURNING = 3;
 }
 
 type Action {
