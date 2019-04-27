@@ -7,11 +7,21 @@ use rust_ldn_demo::shared::utils::squared_distance;
 use spatialos_sdk::worker::component::UpdateParameters;
 use std::cmp::{max, min};
 use std::collections::{HashMap, HashSet};
+use rand::prelude::ThreadRng;
+use rand::Rng;
+use spatialos_sdk::worker::commands::CommandParameters;
+use std::time::{Duration, SystemTime};
+
+const FIRE_SPREAD_RADIUS: f64 = 10.0;
+const FIRE_SPREAD_CHANCE: f64 = 0.10;
+const FIRE_SPREAD_TIMEOUT_MS: u128 = 5000;
 
 pub struct TrackTreesBehaviour {
     trees: HashMap<EntityId, Coordinates>,
     inactive_trees: HashMap<EntityId, Coordinates>,
-    params: UpdateParameters
+    params: UpdateParameters,
+    rng: ThreadRng,
+    last_spread: SystemTime
 }
 
 impl TrackTreesBehaviour {
@@ -22,7 +32,9 @@ impl TrackTreesBehaviour {
         TrackTreesBehaviour {
             trees: HashMap::new(),
             inactive_trees: HashMap::new(),
-            params
+            params,
+            rng: rand::thread_rng(),
+            last_spread: SystemTime::now()
         }
     }
 
@@ -130,6 +142,22 @@ impl TrackTreesBehaviour {
                 }, self.params.clone());
             }
         }
+
+        let now = SystemTime::now();
+
+        if now.duration_since(self.last_spread).unwrap().as_millis() > FIRE_SPREAD_TIMEOUT_MS {
+            self.last_spread = now;
+
+            let targets = view.query::<TreesOnFire>().flat_map(|coords| {
+                self.within(coords.coords.clone(), FIRE_SPREAD_RADIUS)
+            }).collect::<HashSet<EntityId>>();
+
+            for target in targets {
+                if self.rng.gen_bool(FIRE_SPREAD_CHANCE) {
+                    connection.send_command_request::<Fire>(target, FireCommandRequest::SetOnFire(TriggerFire {} ), None, CommandParameters::new());
+                }
+            }
+        }
     }
 
     pub fn within(
@@ -176,8 +204,7 @@ struct TreeRequestQuery<'a> {
 
 impl<'a, 'b: 'a> ViewQuery<'b> for TreeRequestQuery<'a> {
     fn filter(view: &View, entity_id: EntityId) -> bool {
-        view.get_component::<Tree>(entity_id).is_some()
-            && view.has_command_requests::<Tree>(entity_id)
+        view.has_command_requests::<Tree>(entity_id) && view.get_component::<Tree>(entity_id).is_some()
     }
 
     fn select(view: &'b View, entity_id: EntityId) -> Self {
@@ -194,12 +221,33 @@ struct TreeFireRequest {
 
 impl<'b> ViewQuery<'b> for TreeFireRequest {
     fn filter(view: &View, entity_id: EntityId) -> bool {
-        view.get_component::<Tree>(entity_id).is_some() && view.has_command_requests::<Fire>(entity_id)
+        view.has_command_requests::<Fire>(entity_id)
     }
 
     fn select(view: &'b View, entity_id: EntityId) -> Self {
         TreeFireRequest {
             entity_id
+        }
+    }
+}
+
+struct TreesOnFire {
+    pub coords: Coordinates
+}
+
+impl<'b> ViewQuery<'b> for TreesOnFire {
+    fn filter(view: &View, entity_id: EntityId) -> bool {
+        let is_on_fire = match view.get_component::<Fire>(entity_id) {
+            Some(fire) => fire.is_on_fire,
+            None => false
+        };
+
+        is_on_fire && view.get_component::<Position>(entity_id).is_some()
+    }
+
+    fn select(view: &'b View, entity_id: EntityId) -> Self {
+        TreesOnFire {
+            coords: view.get_component::<Position>(entity_id).unwrap().coords.clone()
         }
     }
 }
