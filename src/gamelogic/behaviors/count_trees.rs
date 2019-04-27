@@ -68,10 +68,11 @@ impl TrackTreesBehaviour {
         &self,
         coords: Coordinates,
         radius: f64,
-    ) -> impl Iterator<Item = (&EntityId, &Coordinates)> {
+    ) -> impl Iterator<Item = EntityId> + '_ {
         self.trees
             .iter()
             .filter(move |(id, c)| squared_distance(&coords, c) < radius.powi(2))
+            .map(|(id, _)| *id)
     }
 }
 

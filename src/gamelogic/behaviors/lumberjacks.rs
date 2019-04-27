@@ -4,9 +4,7 @@ use rust_ldn_demo::shared::generated::improbable::{Coordinates, Position, Positi
 use spatialos_sdk::worker::connection::{Connection, WorkerConnection};
 use spatialos_sdk::worker::view::{View, ViewQuery};
 use spatialos_sdk::worker::{EntityId, RequestId};
-use std::any::Any;
 
-use kdtree::distance::squared_euclidean;
 use rand::prelude::ThreadRng;
 use rand::seq::SliceRandom;
 use rust_ldn_demo::shared::utils::{add_coords, multiply, normalized_direction, squared_distance};
@@ -63,17 +61,17 @@ impl LumberjackBehavior {
     ) {
         let possible_targets = trees
             .within(lumberjack.position.coords.clone(), SEARCH_DISTANCE)
-            .collect::<Vec<(&EntityId, &Coordinates)>>();
+            .collect::<Vec<EntityId>>();
 
         let rand_tree = possible_targets.choose(&mut self.rng);
 
         match rand_tree {
-            Some((id, _)) => connection.send_component_update::<Lumberjack>(
+            Some(id) => connection.send_component_update::<Lumberjack>(
                 lumberjack.entity_id,
                 LumberjackUpdate {
                     action: Some(Action {
                         typ: ActionType::FETCHING,
-                        target: Some(**id),
+                        target: Some(*id),
                     }),
                 },
                 self.update_params.clone(),
