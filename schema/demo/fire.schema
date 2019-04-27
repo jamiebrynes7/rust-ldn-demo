@@ -1,0 +1,12 @@
+package demo;
+
+type TriggerFire {}
+
+component Fire {
+    id = 1004;
+
+    bool is_on_fire = 1;
+
+    command TriggerFire set_on_fire(TriggerFire);
+    command TriggerFire clear_fire(TriggerFire);
+}

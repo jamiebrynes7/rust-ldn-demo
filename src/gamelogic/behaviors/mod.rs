@@ -1,3 +1,3 @@
-pub mod count_trees;
+pub mod trees;
 pub mod hq;
 pub mod lumberjacks;

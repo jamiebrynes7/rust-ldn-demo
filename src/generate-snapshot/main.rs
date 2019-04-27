@@ -9,6 +9,7 @@ use spatialos_sdk::worker::entity::Entity;
 use spatialos_sdk::worker::EntityId;
 use std::env::current_dir;
 use std::path::Path;
+use rust_ldn_demo::shared::utils::get_random_coords;
 
 const NUM_TREES: i32 = 2000;
 const NUM_CLUSTERS: i32 = 20;
@@ -92,17 +93,6 @@ fn generate_clusters(rng: &mut ThreadRng) -> Vec<Vector3d> {
     .collect()
 }
 
-fn get_random_coords(center: &Vector3d, radius: i32, rng: &mut ThreadRng) -> Vector3d {
-    let mut position = center.clone();
-
-    let angle_adjustment = rng.gen_range(0.0, 2.0 * std::f64::consts::PI);
-    let (z_component, x_component) = angle_adjustment.sin_cos();
-
-    position.x += x_component * rng.gen_range(0.0, radius as f64);
-    position.z += z_component * rng.gen_range(0.0, radius as f64);
-
-    position
-}
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "generate-snapshot")]

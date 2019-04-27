@@ -2,7 +2,7 @@ mod behaviors;
 
 use structopt::StructOpt;
 
-use crate::behaviors::count_trees::TrackTreesBehaviour;
+use crate::behaviors::trees::TrackTreesBehaviour;
 use crate::behaviors::lumberjacks::LumberjackBehavior;
 use rust_ldn_demo::shared::connection::get_connection;
 use rust_ldn_demo::shared::fps::{FpsTracker, FpsLimiter};

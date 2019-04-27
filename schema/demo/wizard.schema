@@ -1,0 +1,27 @@
+package demo;
+
+import "improbable/standard_library.schema";
+
+enum WizardFaction {
+    GOOD = 0;
+    EVIL = 1;
+}
+
+enum WizardActionType {
+    IDLE = 0;
+    MOVING = 1;
+    SPELL = 2;
+}
+
+type WizardAction {
+    WizardActionType typ = 1;
+    option<EntityId> target = 2;
+    option<improbable.Coordinates> target_pos = 3;
+}
+
+component Wizard {
+    id = 1005;
+
+    WizardFaction faction = 1;
+    WizardAction action = 2;
+}

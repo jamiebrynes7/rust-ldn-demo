@@ -1,4 +1,4 @@
-use crate::behaviors::count_trees::TrackTreesBehaviour;
+use crate::behaviors::trees::TrackTreesBehaviour;
 use rust_ldn_demo::shared::generated::demo::{Action, ActionType, Chop, Headquarters, Lumberjack, LumberjackUpdate, Tree, TreeCommandRequest, TreeCommandResponse, HeadquartersCommandRequest, Score};
 use rust_ldn_demo::shared::generated::improbable::{Coordinates, Position, PositionUpdate};
 use spatialos_sdk::worker::connection::{Connection, WorkerConnection};
@@ -7,7 +7,7 @@ use spatialos_sdk::worker::{EntityId, RequestId};
 
 use rand::prelude::ThreadRng;
 use rand::seq::SliceRandom;
-use rust_ldn_demo::shared::utils::{add_coords, multiply, normalized_direction, squared_distance};
+use rust_ldn_demo::shared::utils::{add_coords, multiply, normalized_direction, squared_distance, move_to};
 use spatialos_sdk::worker::commands::CommandParameters;
 use spatialos_sdk::worker::component::UpdateParameters;
 use std::collections::HashMap;
@@ -59,25 +59,29 @@ impl LumberjackBehavior {
         connection: &mut WorkerConnection,
         trees: &TrackTreesBehaviour,
     ) {
-        let possible_targets = trees
-            .within(lumberjack.position.coords.clone(), SEARCH_DISTANCE)
-            .collect::<Vec<EntityId>>();
+        for attempts in 1..5 {
+            let possible_targets = trees
+                .within(lumberjack.position.coords.clone(), SEARCH_DISTANCE * attempts as f64)
+                .collect::<Vec<EntityId>>();
 
-        let rand_tree = possible_targets.choose(&mut self.rng);
+            let rand_tree = possible_targets.choose(&mut self.rng);
 
-        match rand_tree {
-            Some(id) => connection.send_component_update::<Lumberjack>(
-                lumberjack.entity_id,
-                LumberjackUpdate {
-                    action: Some(Action {
-                        typ: ActionType::FETCHING,
-                        target: Some(*id),
-                    }),
+            match rand_tree {
+                Some(id) =>  {
+                    connection.send_component_update::<Lumberjack>(
+                        lumberjack.entity_id,
+                        LumberjackUpdate {
+                            action: Some(Action {
+                                typ: ActionType::FETCHING,
+                                target: Some(*id),
+                            }),
+                        },
+                        self.update_params.clone(),
+                    );
+                    break;
                 },
-                self.update_params.clone(),
-            ),
-            // TODO: Retry search with larger radius after this?
-            None => {}
+                None => {}
+            }
         }
     }
 
@@ -99,7 +103,7 @@ impl LumberjackBehavior {
             connection.send_component_update::<Position>(
                 lumberjack.entity_id,
                 PositionUpdate {
-                    coords: Some(move_lumberjack(pos, &target_position.coords)),
+                    coords: Some(move_to(pos, &target_position.coords, MOVE_SPEED)),
                 },
                 self.update_params.clone(),
             );
@@ -204,7 +208,7 @@ impl LumberjackBehavior {
             connection.send_component_update::<Position>(
                 lumberjack.entity_id,
                 PositionUpdate {
-                    coords: Some(move_lumberjack(pos, &target_position.coords)),
+                    coords: Some(move_to(pos, &target_position.coords, MOVE_SPEED)),
                 },
                 self.update_params.clone(),
             );
@@ -229,13 +233,6 @@ impl LumberjackBehavior {
             );
         }
     }
-}
-
-fn move_lumberjack(from: &Coordinates, to: &Coordinates) -> Coordinates {
-    let mut position_change = normalized_direction(to, from);
-    multiply(&mut position_change, MOVE_SPEED);
-
-    add_coords(from, &position_change)
 }
 
 struct LumberjackQuery<'a> {

@@ -1,6 +1,9 @@
 {
     "workerType": "RustClient",
     "layer": "client",
+    "permissions": {
+      "all": {}
+    },
     "entity_interest": {
       "range_entity_interest": {
         "radius": 2
