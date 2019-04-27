@@ -10,6 +10,7 @@ use rust_ldn_demo::shared::opt::Opt;
 use spatialos_sdk::worker::connection::Connection;
 use spatialos_sdk::worker::op::WorkerOp;
 use spatialos_sdk::worker::view::View;
+use crate::behaviors::hq::HqBehaviour;
 
 const WORKER_TYPE: &str = "RustWorker";
 
@@ -23,6 +24,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Behaviours
     let mut trees = TrackTreesBehaviour::new();
     let mut lumberjacks = LumberjackBehavior::new();
+    let mut hqs = HqBehaviour::new();
 
     loop {
         view.clear_transient_data();
@@ -47,6 +49,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         trees.tick(&view, &mut connection);
         lumberjacks.tick(&view, &mut connection, &trees);
+        hqs.tick(&view, &mut connection);
 
         let frame_time = fps_tracker.tick(&mut connection);
         fps_limiter.tick(frame_time);
