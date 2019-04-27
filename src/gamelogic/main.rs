@@ -2,13 +2,14 @@ mod behaviors;
 
 use structopt::StructOpt;
 
-use rust_ldn_demo::shared::opt::Opt;
-use rust_ldn_demo::shared::connection::get_connection;
 use crate::behaviors::count_trees::TrackTreesBehaviour;
-use spatialos_sdk::worker::view::View;
-use spatialos_sdk::worker::op::WorkerOp;
 use crate::behaviors::lumberjacks::LumberjackBehavior;
+use rust_ldn_demo::shared::connection::get_connection;
+use rust_ldn_demo::shared::fps::{FpsTracker, FpsLimiter};
+use rust_ldn_demo::shared::opt::Opt;
 use spatialos_sdk::worker::connection::Connection;
+use spatialos_sdk::worker::op::WorkerOp;
+use spatialos_sdk::worker::view::View;
 
 const WORKER_TYPE: &str = "RustWorker";
 
@@ -16,6 +17,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let opt = Opt::from_args();
     let mut connection = get_connection(WORKER_TYPE, &opt)?;
     let mut view = View::new();
+    let mut fps_tracker = FpsTracker::new(10);
+    let mut fps_limiter = FpsLimiter::new(60.0);
 
     // Behaviours
     let mut trees = TrackTreesBehaviour::new();
@@ -38,12 +41,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
 
             if !in_critical_section {
-                break
+                break;
             }
         }
 
         trees.tick(&view, &mut connection);
         lumberjacks.tick(&view, &mut connection, &trees);
+
+        let frame_time = fps_tracker.tick(&mut connection);
+        fps_limiter.tick(frame_time);
     }
 
     Ok(())

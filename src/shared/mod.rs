@@ -1,4 +1,5 @@
 pub mod connection;
+pub mod fps;
 pub mod generated;
 pub mod opt;
 pub mod templates;

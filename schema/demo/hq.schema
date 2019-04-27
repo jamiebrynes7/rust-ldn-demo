@@ -1,7 +1,11 @@
 package demo;
 
+type Score {}
+
 component Headquarters {
     id = 1003;
 
     uint32 score = 1;
+
+    command Score deposit(Score);
 }

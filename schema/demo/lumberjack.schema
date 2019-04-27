@@ -15,6 +15,5 @@ type Action {
 component Lumberjack {
     id = 1002;
 
-    uint32 resources = 1;
     Action action = 2;
 }

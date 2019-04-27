@@ -8,10 +8,18 @@ pub fn normalized_direction(c1: &Coordinates, c2: &Coordinates) -> Coordinates {
     let mut diff = Coordinates {
         x: c1.x - c2.x,
         y: c1.y - c2.y,
-        z: c1.z - c2.z
+        z: c1.z - c2.z,
     };
 
-    let magnitude = squared_distance(&diff, &Coordinates{x: 0.0, y: 0.0, z: 0.0}).sqrt();
+    let magnitude = squared_distance(
+        &diff,
+        &Coordinates {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        },
+    )
+    .sqrt();
 
     diff.x = diff.x / magnitude;
     diff.y = diff.y / magnitude;
@@ -30,6 +38,6 @@ pub fn add_coords(c1: &Coordinates, c2: &Coordinates) -> Coordinates {
     Coordinates {
         x: c1.x + c2.x,
         y: c1.y + c2.y,
-        z: c1.z + c2.z
+        z: c1.z + c2.z,
     }
 }

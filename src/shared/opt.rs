@@ -1,10 +1,7 @@
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
-#[structopt(
-name = "rust-ldn-demo",
-about = "A SpatialOS worker written in Rust."
-)]
+#[structopt(name = "rust-ldn-demo", about = "A SpatialOS worker written in Rust.")]
 pub struct Opt {
     #[structopt(name = "WORKER_ID", long = "worker-id", short = "i")]
     pub worker_id: Option<String>,
@@ -34,5 +31,5 @@ pub enum Command {
 
         #[structopt(name = "PROJECT_NAME", long = "project-name", short = "n")]
         project_name: String,
-    }
+    },
 }
