@@ -62,7 +62,7 @@ pub fn headquarters(position: &Vector3d) -> Result<Entity, String> {
 }
 
 pub fn wizard(position: &Vector3d, is_evil: bool, id: &str) -> Result<Entity, String> {
-    let entity_name = format!("{} Wizard", if is_evil { "Evil"} else { "Good"} );
+    let entity_name = format!("{} Wizard", if is_evil { "Evil" } else { "Good"} );
     let worker_attribute = format!("workerId:{}", id);
 
     let faction = match is_evil {

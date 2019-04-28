@@ -1,0 +1,1 @@
+./build/release/bin/client.exe -i EvilWizards --evil receptionist

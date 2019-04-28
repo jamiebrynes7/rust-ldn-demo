@@ -17,64 +17,22 @@
       "cloudDeployment": {
         "linux": {
           "localBuildDirectory": "./build/release/bin",
-          "command": "project-example",
+          "command": "gamelogic",
           "arguments": [
             "--worker-id",
             "${IMPROBABLE_WORKER_ID}",
-            "--worker-type",
-            "RustWorker",
-            "receptionist",
-            "--host",
-            "${IMPROBABLE_RECEPTIONIST_HOST}",
-            "--port",
-            "${IMPROBABLE_RECEPTIONIST_PORT}"
+            "receptionist"
           ]
         }
       },
       "localDeployment": {
-        "macos": {
-          "localBuildDirectory": "./build/debug/bin",
-          "command": "project-example",
-          "arguments": [
-            "--worker-id",
-            "${IMPROBABLE_WORKER_ID}",
-            "--worker-type",
-            "RustWorker",
-            "receptionist",
-            "--host",
-            "${IMPROBABLE_RECEPTIONIST_HOST}",
-            "--port",
-            "${IMPROBABLE_RECEPTIONIST_PORT}"
-          ]
-        },
-        "linux": {
-          "localBuildDirectory": "./build/debug/bin",
-          "command": "project-example",
-          "arguments": [
-            "--worker-id",
-            "${IMPROBABLE_WORKER_ID}",
-            "--worker-type",
-            "RustWorker",
-            "receptionist",
-            "--host",
-            "${IMPROBABLE_RECEPTIONIST_HOST}",
-            "--port",
-            "${IMPROBABLE_RECEPTIONIST_PORT}"
-          ]
-        },
         "windows": {
-          "localBuildDirectory": "./build/debug/bin",
-          "command": "project-example.exe",
+          "localBuildDirectory": "./build/release/bin",
+          "command": "gamelogic.exe",
           "arguments": [
             "--worker-id",
             "${IMPROBABLE_WORKER_ID}",
-            "--worker-type",
-            "RustWorker",
-            "receptionist",
-            "--host",
-            "${IMPROBABLE_RECEPTIONIST_HOST}",
-            "--port",
-            "${IMPROBABLE_RECEPTIONIST_PORT}"
+            "receptionist"
           ]
         }
       }

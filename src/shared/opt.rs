@@ -6,6 +6,9 @@ pub struct Opt {
     #[structopt(name = "WORKER_ID", long = "worker-id", short = "i")]
     pub worker_id: Option<String>,
 
+    #[structopt(long = "evil")]
+    pub evil: bool,
+
     #[structopt(subcommand)]
     pub command: Command,
 }

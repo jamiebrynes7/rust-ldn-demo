@@ -2,3 +2,4 @@ spatial_sdk_version = "13.6.0"
 spatial_lib_dir = "dependencies"
 
 codegen_out = "src/shared/generated.rs"
+local_build_profile = "release"

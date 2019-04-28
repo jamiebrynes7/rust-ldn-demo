@@ -11,7 +11,7 @@ use rust_ldn_demo::shared::utils::{squared_distance, normalized_direction, multi
 use rust_ldn_demo::shared::generated::demo::WizardActionType::MOVING;
 use spatialos_sdk::worker::commands::CommandParameters;
 
-const SEARCH_RADIUS: f64 = 150.0;
+const SEARCH_RADIUS: f64 = 75.0;
 const MOVE_SPEED: f64 = 0.05; // At 60FPS -> 3 units/second.
 const DISTANCE_THRESHOLD: f64 = 3.0;
 

@@ -26,8 +26,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let center = Vector3d { x: 0.0, y: 0.0 , z: 0.0};
     let mut rng = rand::thread_rng();
 
-    for i in 0..5 {
-        connection.send_create_entity_request(templates::wizard(&get_random_coords(&center, 500, &mut rng), true, connection.get_worker_id())?, None, None);
+    let num_wizards = if opt.evil { 5 } else { 10 };
+
+    for i in 0..num_wizards {
+        connection.send_create_entity_request(templates::wizard(&get_random_coords(&center, 500, &mut rng), opt.evil, connection.get_worker_id())?, None, None);
     }
 
     let mut trees = TrackTreesBehaviour::new();

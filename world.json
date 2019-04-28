@@ -11,9 +11,6 @@
           "rectangleGrid": {
             "cols": 1,
             "rows": 1
-          },
-          "options": {
-            "manualWorkerConnectionOnly": true
           }
         }
       ]
